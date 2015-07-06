@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=@PREFIX@
+exec_prefix=@EXEC_PREFIX@
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
+
+Name: account-common
+Description: Account common library
+Version: @VERSION@
+#Requires: capi-base-common
+Libs: -L${libdir} -laccount-common
+Cflags: -I${includedir}
