@@ -1232,9 +1232,11 @@ GVariant* marshal_user_txt_array(char* const* user_data_txt_array)
 	{
 		char key[256];
 		ACCOUNT_SNPRINTF(key, strlen(ACCOUNT_DATA_KEY_USER_DATA_TXT)+3, "%s%d", ACCOUNT_DATA_KEY_USER_DATA_TXT, i);
-		g_variant_builder_add(&builder, "{sv}",
-				key,
-				g_variant_new_string(user_data_txt_array[i]));
+		if(user_data_txt_array[i] != NULL) {
+			g_variant_builder_add(&builder, "{sv}",
+					key,
+					g_variant_new_string(user_data_txt_array[i]));
+		}
 	}
 
 	_INFO("marshal_user_data_int_list end");
