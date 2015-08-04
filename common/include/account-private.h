@@ -334,7 +334,7 @@ typedef struct GSList 		account_iterator_s;
 
 #define RCS_APPID "com.samsung.rcs-im"
 #define IMS_SERVICE_APPID "ims-service"
-#define ACTIVESYNC_APPID "activesync-ui"
+#define ACTIVESYNC_APPID "eas-ui"
 #define EMAIL_APPID "email-setting-efl"
 #define SYNCHRONISE_APPID "setting-synchronise-efl"
 #define DS_AGENT_CMDLINE "/usr/bin/oma-ds-agent"

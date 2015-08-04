@@ -307,9 +307,12 @@ marshal_account(const account_s* account)
 
 	for(i=0; i<USER_TXT_CNT; i++)
 	{
-		g_variant_builder_add (&builder, "{sv}",
-				ACCOUNT_DATA_KEY_USER_DATA_TXT,
-				marshal_user_txt_array((char* const*)in_data->user_data_txt));
+		GVariant *variant = marshal_user_txt_array((char* const*)in_data->user_data_txt);
+		if( variant ) {
+			g_variant_builder_add (&builder, "{sv}",
+					ACCOUNT_DATA_KEY_USER_DATA_TXT,
+					variant);
+		}
 	}
 
 	if (in_data->capablity_list != NULL)
@@ -365,7 +368,7 @@ account_s* umarshal_account(GVariant* in_data)
 
 	g_variant_iter_init (&iter, in_data);
 
-	while (g_variant_iter_next (&iter, "{sv}", &key, &value))
+	while (g_variant_iter_loop (&iter, "{sv}", &key, &value))
 	{
 		if (!strcmp(key, ACCOUNT_DATA_KEY_ID))
 		{
@@ -531,7 +534,7 @@ GSList* unmarshal_account_list(GVariant* variant)
 
 	g_variant_iter_init (&iter, variant);
 
-	while (g_variant_iter_next (&iter, "a{sv}", &iter_row))
+	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_s* account = (account_s*)calloc(1, sizeof(account_s));
 
@@ -685,7 +688,7 @@ account_s* create_empty_account_instance(void)
 	data->secret = 0;
 	data->sync_support = false;
 	data->capablity_list = NULL;
-//	data->account_list = false;
+	data->account_list = NULL;
 	data->custom_list = NULL;
 
 	_INFO("create_empty_account_instance end");
@@ -740,7 +743,7 @@ GSList* unmarshal_account_type_list(GVariant* variant)
 
 	g_variant_iter_init (&iter, variant);
 
-	while (g_variant_iter_next (&iter, "a{sv}", &iter_row))
+	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_type_s* account_type = create_empty_account_type_instance();
 
@@ -889,7 +892,7 @@ account_type_s* umarshal_account_type(GVariant* in_data)
 	GVariant *value = NULL;
 
 	g_variant_iter_init (&iter, in_data);
-	while (g_variant_iter_next (&iter, "{sv}", &key, &value))
+	while (g_variant_iter_loop (&iter, "{sv}", &key, &value))
 	{
 		if (!strcmp(key, ACCOUNT_TYPE_DATA_KEY_APP_ID))
 		{
@@ -1090,7 +1093,7 @@ GSList* unmarshal_capability_list(GVariant* variant)
 	g_variant_iter_init (&iter, variant);
 
 
-	while (g_variant_iter_next (&iter, "a{sv}", &iter_row))
+	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_capability_s* account_capability = (account_capability_s*)calloc(1, sizeof(account_capability_s));
 
@@ -1153,7 +1156,7 @@ GSList* unmarshal_custom_list(GVariant* variant)
 
 	g_variant_iter_init (&iter, variant);
 
-	while (g_variant_iter_next (&iter, "a{sv}", &iter_row))
+	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_custom_s* account_custom = (account_custom_s*)calloc(1, sizeof(account_custom_s));
 
@@ -1216,6 +1219,7 @@ GVariant* marshal_user_int_array(const int* user_data_int_array)
 GVariant* marshal_user_txt_array(char* const* user_data_txt_array)
 {
 	int i;
+	bool is_all_null = true;
 
 	_INFO("marshal_user_data_int_list start");
 	if (user_data_txt_array == NULL)
@@ -1231,15 +1235,22 @@ GVariant* marshal_user_txt_array(char* const* user_data_txt_array)
 	for(i = 0; i < USER_TXT_CNT; i++)
 	{
 		char key[256];
-		ACCOUNT_SNPRINTF(key, strlen(ACCOUNT_DATA_KEY_USER_DATA_TXT)+3, "%s%d", ACCOUNT_DATA_KEY_USER_DATA_TXT, i);
-		if(user_data_txt_array[i] != NULL) {
+		if (user_data_txt_array[i]) {
+			ACCOUNT_SNPRINTF(key, strlen(ACCOUNT_DATA_KEY_USER_DATA_TXT)+3, "%s%d", ACCOUNT_DATA_KEY_USER_DATA_TXT, i);
 			g_variant_builder_add(&builder, "{sv}",
 					key,
 					g_variant_new_string(user_data_txt_array[i]));
+			is_all_null = false;
 		}
 	}
 
 	_INFO("marshal_user_data_int_list end");
+
+	if (is_all_null) {
+		g_variant_builder_clear (&builder);
+		return NULL;
+	}
+
 	return g_variant_builder_end (&builder);
 }
 
@@ -1271,7 +1282,7 @@ int* unmarshal_user_int_array(GVariant* variant)
 		ACCOUNT_SNPRINTF(compare_key[i], strlen(ACCOUNT_DATA_KEY_USER_DATA_INT)+3, "%s%d", ACCOUNT_DATA_KEY_USER_DATA_INT, i);
 	}
 
-	while (g_variant_iter_next (&iter, "{sv}", &key, &value))
+	while (g_variant_iter_loop (&iter, "{sv}", &key, &value))
 	{
 		for(i=0; i<USER_INT_CNT; i++)
 		{
@@ -1314,7 +1325,7 @@ char** unmarshal_user_txt_array(GVariant* variant)
 		ACCOUNT_SNPRINTF(compare_key[i], strlen(ACCOUNT_DATA_KEY_USER_DATA_TXT)+3, "%s%d", ACCOUNT_DATA_KEY_USER_DATA_TXT, i);
 	}
 
-	while (g_variant_iter_next (&iter, "{sv}", &key, &value))
+	while (g_variant_iter_loop (&iter, "{sv}", &key, &value))
 	{
 		for(i=0; i<USER_TXT_CNT; i++)
 		{

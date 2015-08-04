@@ -1,7 +1,7 @@
 
 Name:       account-common
 Summary:    Account common library
-Version:    0.0.1
+Version:    0.0.4
 Release:    1
 Group:      Social & Content/API
 License:    Apache-2.0
@@ -30,6 +30,8 @@ Development files for %{name}
 %post
 /sbin/ldconfig
 /usr/bin/sqlite3
+
+chsmack -a '_' %{_libdir}/libaccount-common.so.0*
 
 %postun
 /sbin/ldconfig
