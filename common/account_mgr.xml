@@ -3,6 +3,7 @@
   <interface name="org.tizen.account.manager">
     <method name="account_add">
       <arg type="a{sv}" name="account_data" direction="in" />
+      <arg type="i" name="uid" direction="in" />
       <arg type="i" name="account_db_id" direction="out" />
     </method>
     <method name="account_type_add">
@@ -17,18 +18,22 @@
     </method>
     <method name="account_delete_from_db_by_id">
       <arg type="i" name="account_db_id" direction="in" />
+      <arg type="i" name="uid" direction="in" />
     </method>
     <method name="account_delete_from_db_by_user_name">
       <arg type="s" name="user_name" direction="in" />
       <arg type="s" name="package_name" direction="in" />
+      <arg type="i" name="uid" direction="in" />
     </method>
     <method name="account_delete_from_db_by_package_name">
       <arg type="s" name="package_name" direction="in" />
       <arg type="b" name="permission" direction="in" />
+      <arg type="i" name="uid" direction="in" />
     </method>
     <method name="account_update_to_db_by_id">
       <arg type="a{sv}" name="account_data" direction="in" />
       <arg type="i" name="account_id" direction="in" />
+      <arg type="i" name="uid" direction="in" />
     </method>
     <method name="account_get_total_count_from_db">
       <arg type="b" name="include_hidden" direction="in" />
@@ -42,6 +47,7 @@
       <arg type="a{sv}" name="account_data" direction="in" />
       <arg type="s" name="user_name" direction="in" />
       <arg type="s" name="package_name" direction="in" />
+      <arg type="i" name="uid" direction="in" />
     </method>
     <method name="account_type_query_label_by_locale">
       <arg type="s" name="app_id" direction="in" />
@@ -76,6 +82,7 @@
     <method name="account_update_sync_status_by_id">
       <arg type="i" name="account_db_id" direction="in" />
       <arg type="i" name="sync_status" direction="in" />
+      <arg type="i" name="uid" direction="in" />
     </method>
     <method name="account_type_query_provider_feature_by_app_id">
       <arg type="s" name="app_id" direction="in" />

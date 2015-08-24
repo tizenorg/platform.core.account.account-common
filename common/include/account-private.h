@@ -103,6 +103,8 @@ NULL after passing 	them to free: free(NULL) is safe (it does nothing).
 					ptr = NULL; \
 				}	\
 
+#define OWNER_ROOT 0
+#define GLOBAL_USER tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
 #define ACCOUNT_DB_PATH "/usr/dbspace/.account.db"
 #define ACCOUNT_TABLE "account"
 #define CAPABILITY_TABLE "capability"
