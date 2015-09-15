@@ -1,6 +1,7 @@
 
 SET(SRCS
 	./src/account_ipc_marshal.c
+	./src/account_free.c
 )
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/common/include)
@@ -45,6 +46,7 @@ INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${LIBDIR})
 
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/account-mgr-stub.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_ipc_marshal.h DESTINATION include)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_free.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account-private.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/dbg.h DESTINATION include)
 
