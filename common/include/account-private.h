@@ -103,117 +103,6 @@ NULL after passing 	them to free: free(NULL) is safe (it does nothing).
 					ptr = NULL; \
 				}	\
 
-//ACCOUNT_TABLE
-#define ACCOUNT_SCHEMA	"create table account \n"\
-	"(\n"\
-"_id INTEGER PRIMARY KEY AUTOINCREMENT, "\
-"user_name TEXT, "\
-"email_address TEXT, "\
-"display_name TEXT, "\
-"icon_path TEXT, "\
-"source TEXT, "\
-"package_name TEXT, "\
-"access_token TEXT, "\
-"domain_name TEXT, "\
-"auth_type INTEGER, "\
-"secret INTEGER, "\
-"sync_support INTEGER, "\
-"txt_custom0 TEXT, "\
-"txt_custom1 TEXT, "\
-"txt_custom2 TEXT, "\
-"txt_custom3 TEXT, "\
-"txt_custom4 TEXT, "\
-"int_custom0 INTEGER, "\
-"int_custom1 INTEGER, "\
-"int_custom2 INTEGER, "\
-"int_custom3 INTEGER, "\
-"int_custom4 INTEGER "\
-");"
-
-//CAPABILITY_TABLE
-#define CAPABILITY_SCHEMA  "create table capability \n"\
-	"(\n"\
-"_id INTEGER PRIMARY KEY AUTOINCREMENT, "\
-"key TEXT, "\
-"value INTEGER, "\
-"package_name TEXT, "\
-"user_name TEXT, "\
-"account_id INTEGER, "\
-"FOREIGN KEY (account_id) REFERENCES account(_id) "\
-");"
-
-//ACCOUNT_CUSTOM_TABLE
-#define ACCOUNT_CUSTOM_SCHEMA  "create table account_custom \n"\
-	"(\n"\
-"AccountId INTEGER, "\
-"AppId TEXT, "\
-"Key TEXT, "\
-"Value TEXT "\
-");"
-
-//ACCOUNT_TYPE_TABLE
-#define ACCOUNT_TYPE_SCHEMA "create table account_type \n"\
-	"(\n"\
-"_id INTEGER PRIMARY KEY AUTOINCREMENT, "\
-"AppId TEXT, "\
-"ServiceProviderId TEXT, "\
-"IconPath TEXT, "\
-"SmallIconPath TEXT, "\
-"MultipleAccountSupport INTEGER "\
-");"
-
-//LABEL_TABLE
-#define LABEL_SCHEMA "create table label \n"\
-	"(\n"\
-"AppId TEXT, "\
-"Label TEXT, "\
-"Locale TEXT"\
-");"
-
-//PROVIDER_FEATURE_TABLE
-#define PROVIDER_FEATURE_SCHEMA "create table provider_feature \n"\
-	"(\n"\
-"app_id TEXT, "\
-"key TEXT "\
-");"
-
-#define OWNER_ROOT 0
-#define GLOBAL_USER tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-//#define ACCOUNT_DB_PATH "/usr/dbspace/.account.db"
-//#define USER_DB_DIR tzplatform_getenv(TZ_USER_DB)
-//#define ACCOUNT_GLOBAL_DB_PATH "/usr/dbspace/.account.db"
-//#define ACCOUNT_GLOBAL_JN_PATH "/usr/dbspace/.account.db-journal"
-//#define ACCOUNT_DB_PATH tzplatform_mkpath(TZ_USER_DB, "/.account.db")
-//#define ACCOUNT_JN_PATH tzplatform_mkpath(TZ_USER_DB, "/.account.db-journal")
-#define ACCOUNT_GET_USER_DB_DIR(dest,size,uid) \
-	do { \
-			snprintf(dest,size-1,"%s%d", "/usr/dbspace/", uid); \
-	}while(0)
-#define ACCOUNT_GET_GLOBAL_DB_PATH(dest,size) \
-	do { \
-			snprintf(dest,size-1,"%s", "/usr/dbspace/.account.db"); \
-	}while(0)
-#define ACCOUNT_GET_GLOBAL_JN_PATH(dest,size) \
-	do { \
-			snprintf(dest,size-1,"%s", "/usr/dbspace/.account.db-journal"); \
-	}while(0)
-#define ACCOUNT_GET_USER_DB_PATH(dest,size,uid) \
-	do { \
-			snprintf(dest,size-1,"%s%d%s", "/usr/dbspace/", uid, "/.account.db"); \
-	}while(0)
-#define ACCOUNT_GET_USER_JN_PATH(dest,size,uid) \
-	do { \
-			snprintf(dest,size-1,"%s%d%s", "/usr/dbspace/", uid, "/.account.db-journal"); \
-	}while(0)
-#define ACCOUNT_TABLE "account"
-#define CAPABILITY_TABLE "capability"
-#define ACCOUNT_CUSTOM_TABLE "account_custom"
-#define ACCOUNT_TYPE_TABLE "account_type"
-#define LABEL_TABLE "label"
-#define PROVIDER_FEATURE_TABLE "provider_feature"
-#define ACCOUNT_SQLITE_SEQ "sqlite_sequence"
-#define ACCOUNT_SQL_LEN_MAX 	1024
-#define ACCOUNT_TABLE_TOTAL_COUNT	6
 
 #define FACEBOOK_PKG_NAME		"com.samsung.facebook"
 #define EMAIL_PKG_NAME			"email-setting-efl"
@@ -222,7 +111,7 @@ NULL after passing 	them to free: free(NULL) is safe (it does nothing).
 #define SAMSUNGACCOUNTFRONT_PKG_NAME  "com.samsung.samsung-account-front"
 //#define SAMSUNGACCOUNT_PKG_NAME  "gr47by21a5.SamsungAccount"
 #define SAMSUNGACCOUNT_PKG_NAME  "com.samsung.samsungaccount"
-#define CHATON_PKG_NAME  			"xnq5eh9vop.ChatON"
+#define CHATON_PKG_NAME			"xnq5eh9vop.ChatON"
 #define DROPBOX_PKG_NAME  "com.samsung.dropbox"
 #define SYNCHRONISE_PKG_NAME "setting-synchronise-efl"
 

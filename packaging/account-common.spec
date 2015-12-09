@@ -1,7 +1,7 @@
 
 Name:       account-common
 Summary:    Account common library
-Version:    0.1.0
+Version:    0.1.1
 Release:    1
 Group:      Social & Content/API
 License:    Apache-2.0
@@ -12,6 +12,13 @@ BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(capi-base-common)
 BuildRequires:  pkgconfig(glib-2.0) >= 2.26
 BuildRequires:  pkgconfig(gio-unix-2.0)
+BuildRequires:  pkgconfig(db-util)
+BuildRequires:  pkgconfig(vconf)
+BuildRequires:  pkgconfig(pkgmgr-info)
+BuildRequires:  pkgconfig(aul)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(key-manager)
+BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  python-xml
 
 %description
