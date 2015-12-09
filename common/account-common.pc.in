@@ -8,6 +8,6 @@ includedir=@INCLUDEDIR@
 Name: account-common
 Description: Account common library
 Version: @VERSION@
-#Requires: capi-base-common
+Requires: capi-base-common, pkgmgr-info, db-util
 Libs: -L${libdir} -laccount-common
 Cflags: -I${includedir}

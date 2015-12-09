@@ -1,10 +1,14 @@
 
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/common/include)
+#INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/common/src)
+
 SET(SRCS
 	./src/account_ipc_marshal.c
 	./src/account_free.c
+	./src/account_db_helper.c
+	./src/account_crypto_service.c
+	./src/account_key_handler.c
 )
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/common/include)
 
 INCLUDE(FindPkgConfig)
 pkg_check_modules(clientpkgs REQUIRED
@@ -12,6 +16,13 @@ pkg_check_modules(clientpkgs REQUIRED
 		glib-2.0
 		gio-unix-2.0
 		capi-base-common
+		db-util
+		vconf
+		pkgmgr-info
+		aul
+		openssl
+		key-manager
+		libtzplatform-config
 )
 
 FOREACH(flag ${clientpkgs_CFLAGS})
@@ -47,6 +58,9 @@ INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${LIBDIR})
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/account-mgr-stub.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_ipc_marshal.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_free.h DESTINATION include)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_crypto_service.h DESTINATION include)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_db_helper.h DESTINATION include)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account_err.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/account-private.h DESTINATION include)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/common/include/dbg.h DESTINATION include)
 

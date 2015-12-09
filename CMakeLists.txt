@@ -6,6 +6,6 @@ SET(EXEC_PREFIX "\${prefix}")
 #SET(LIBDIR "\${prefix}/lib")
 #SET(INCLUDEDIR "\${prefix}/include ")
 SET(VERSION_MAJOR 0)
-SET(VERSION "${VERSION_MAJOR}.1.0")
+SET(VERSION "${VERSION_MAJOR}.1.1")
 
 ADD_SUBDIRECTORY(common)
