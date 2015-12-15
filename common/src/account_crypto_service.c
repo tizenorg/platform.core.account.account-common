@@ -41,6 +41,7 @@
 #define CRYPTO_ERROR -1
 #define CRYPTO_ERROR_NONE 0
 #define CRYPTO_ERROR_INVALID_PARAMETER TIZEN_ERROR_INVALID_PARAMETER
+#define CRYPTO_ERROR_OUT_OF_MEMORY TIZEN_ERROR_OUT_OF_MEMORY
 
 #define ACCESS_TOKEN_ALIAS  "access_token"
 
@@ -74,6 +75,11 @@ static int _encrypt_aes_cbc(const unsigned char* key, const int key_len, const u
 
     // assing a enough memory for decryption.
     ciphertext = (unsigned char*) malloc(data_len + 32);
+	if (ciphertext == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return CRYPTO_ERROR_OUT_OF_MEMORY;
+	}
+
 	ACCOUNT_MEMSET(ciphertext, 0, data_len + 32);
 
 	_INFO("before EVP_CIPHER_CTX_new");
@@ -149,6 +155,11 @@ static int _decrypt_aes_cbc(const unsigned char* key, const int key_len, const u
 
     // assing a enough memory for decryption.
     plaintext = (unsigned char*) malloc(data_len);
+	if (plaintext == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return CRYPTO_ERROR_OUT_OF_MEMORY;
+	}
+
 	ACCOUNT_MEMSET(plaintext, 0, data_len);
 
 	_INFO("before EVP_CIPHER_CTX_new");

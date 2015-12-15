@@ -75,19 +75,23 @@ _variant_to_label(GVariant *variant)
 	g_variant_get (variant, "(sss)", &app_id, &label, &locale);
 
 	label_s* label_data = (label_s*) calloc(1, sizeof(label_s));
-
 	if( label_data == NULL ) {
-		_ERR("provider_feature_s calloc failed - out of memory.");
+		ACCOUNT_FATAL("label_s calloc failed - out of memory.");
+		g_free(app_id);
+		g_free(label);
+		g_free(locale);
 		return NULL;
 	}
 
 	label_data->app_id = g_strdup(app_id);
+
 	label_data->label = g_strdup(label);
+
 	label_data->locale = g_strdup(locale);
 
-	g_free (app_id);
-	g_free (label);
-	g_free (locale);
+	g_free(app_id);
+	g_free(label);
+	g_free(locale);
 
 	return label_data;
 }
@@ -160,13 +164,13 @@ _variant_to_provider_feature(GVariant *variant)
 	g_variant_get (variant, "(ss)", &key, &app_id);
 
 	provider_feature_s* provider_feature_data = (provider_feature_s*) calloc(1, sizeof(provider_feature_s));
-
-	if( provider_feature_data == NULL ) {
+	if (provider_feature_data == NULL) {
 		_ERR("provider_feature_s calloc failed - out of memory.");
 		return NULL;
 	}
 
 	provider_feature_data->key = g_strdup(key);
+
 	provider_feature_data->app_id = g_strdup(app_id);
 
 	g_free (key);
@@ -356,9 +360,8 @@ account_s* umarshal_account(GVariant* in_data)
 	}
 
 	account_s* account = (account_s*)calloc(1, sizeof(account_s));
-	if (account == NULL)
-	{
-		_ERR("Out of memory");
+	if (account == NULL) {
+		_ERR("account_s calloc failed - out of memory");
 		return NULL;
 	}
 
@@ -537,6 +540,10 @@ GSList* unmarshal_account_list(GVariant* variant)
 	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_s* account = (account_s*)calloc(1, sizeof(account_s));
+		if (account == NULL) {
+			ACCOUNT_FATAL("account_s calloc failed - out of memory.");
+			break;
+		}
 
 		while (g_variant_iter_loop(iter_row, "{sv}", &key, &value))
 		{
@@ -666,10 +673,8 @@ account_s* create_empty_account_instance(void)
 	_INFO("create_empty_account_instance start");
 
 	account_s *data = (account_s*)malloc(sizeof(account_s));
-
-	if (data == NULL)
-	{
-		ACCOUNT_ERROR("Memory Allocation Failed");
+	if (data == NULL) {
+		ACCOUNT_ERROR("account_s malloc failed - out of memory");
 		return NULL;
 	}
 
@@ -700,10 +705,8 @@ account_type_s* create_empty_account_type_instance(void)
 {
 	_INFO("create_empty_account_type_instance start");
 	account_type_s *data = (account_type_s*)malloc(sizeof(account_type_s));
-
-	if (data == NULL)
-	{
-		ACCOUNT_ERROR("Memory Allocation Failed");
+	if (data == NULL) {
+		ACCOUNT_ERROR("account_type_s malloc failed - out of memory");
 		return NULL;
 	}
 
@@ -881,9 +884,8 @@ account_type_s* umarshal_account_type(GVariant* in_data)
 	}
 
 	account_type_s* account_type = (account_type_s*)calloc(1, sizeof(account_type_s));
-	if (account_type == NULL)
-	{
-		_ERR("Out of memory");
+	if (account_type == NULL) {
+		ACCOUNT_FATAL("account_type_s calloc failed - out of memory");
 		return NULL;
 	}
 
@@ -1096,6 +1098,10 @@ GSList* unmarshal_capability_list(GVariant* variant)
 	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_capability_s* account_capability = (account_capability_s*)calloc(1, sizeof(account_capability_s));
+		if (account_capability == NULL) {
+			ACCOUNT_FATAL("account_capability_s calloc Failed - out of memory");
+			break;
+		}
 
 		while (g_variant_iter_loop(iter_row, "{sv}", &key, &value))
 		{
@@ -1159,6 +1165,10 @@ GSList* unmarshal_custom_list(GVariant* variant)
 	while (g_variant_iter_loop (&iter, "a{sv}", &iter_row))
 	{
 		account_custom_s* account_custom = (account_custom_s*)calloc(1, sizeof(account_custom_s));
+		if (account_custom == NULL) {
+			ACCOUNT_FATAL("account_custom_s calloc failed - out of memory");
+			break;
+		}
 
 		while (g_variant_iter_loop(iter_row, "{sv}", &key, &value))
 		{
@@ -1273,9 +1283,13 @@ int* unmarshal_user_int_array(GVariant* variant)
 //	gchar* var_type = g_variant_print (variant, TRUE);
 //	_INFO("var_type = %s", var_type);
 
-	g_variant_iter_init (&iter, variant);
+	user_data_int = (int*)calloc(USER_INT_CNT, sizeof(int)*USER_INT_CNT);
+	if (user_data_int == NULL) {
+		ACCOUNT_FATAL("user_data_int_array calloc failed - out of memory");
+		return NULL;
+	}
 
-	user_data_int = (int*)calloc(USER_INT_CNT, sizeof(int));
+	g_variant_iter_init (&iter, variant);
 
 	for(i=0; i<USER_INT_CNT; i++)
 	{
@@ -1316,9 +1330,13 @@ char** unmarshal_user_txt_array(GVariant* variant)
 //	gchar* var_type = g_variant_print (variant, TRUE);
 //	_INFO("var_type = %s", var_type);
 
-	g_variant_iter_init (&iter, variant);
+	user_data_txts = (char**)calloc(USER_TXT_CNT, sizeof(char*)*USER_TXT_CNT);
+	if (user_data_txts == NULL) {
+		ACCOUNT_FATAL("user_data_txt_array calloc failed - out of memory");
+		return NULL;
+	}
 
-	user_data_txts = (char**)calloc(USER_TXT_CNT, sizeof(char*));
+	g_variant_iter_init (&iter, variant);
 
 	for(i=0; i<USER_TXT_CNT; i++)
 	{
