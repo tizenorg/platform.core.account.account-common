@@ -140,6 +140,12 @@ char* _account_get_current_appid(int pid, uid_t uid)
 		if (!g_strcmp0(cmdline, EMAIL_SERVICE_CMDLINE)) {
 			appid_ret = _account_dup_text(EMAIL_APPID);
 			_ACCOUNT_FREE(cmdline);
+
+			if (appid_ret == NULL) {
+				ACCOUNT_FATAL("Memory Allocation Failed");
+				return NULL;
+			}
+
 			return appid_ret;
 		} else {
 			ACCOUNT_DEBUG("No app id\n");
@@ -147,7 +153,13 @@ char* _account_get_current_appid(int pid, uid_t uid)
 			return NULL;
 		}
 	}
-	return _account_dup_text(appid);
+
+	appid_ret = _account_dup_text(appid);
+	if (appid_ret == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+	}
+
+	return appid_ret;
 }
 
 
@@ -817,9 +829,14 @@ static int _account_get_current_appid_cb(const pkgmgrinfo_appinfo_h handle, void
 	}
 
 	item = _account_dup_text(appid);
+	if (item == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return _ACCOUNT_ERROR_OUT_OF_MEMORY;
+	}
+
 	*appid_list = g_slist_append(*appid_list, item);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 static int _account_type_query_app_id_exist(sqlite3 *account_db_handle, const char* app_id)
@@ -887,12 +904,20 @@ int _account_get_represented_appid_from_db(sqlite3 *account_user_db, sqlite3 *ac
 	if(!strcmp(appid, "com.samsung.setting")){
 		ACCOUNT_DEBUG("Setting exception\n");
 		*verified_appid = _account_dup_text("com.samsung.setting");
+		if (*verified_appid == NULL) {
+			ACCOUNT_FATAL("Memory Allocation Failed");
+			return _ACCOUNT_ERROR_OUT_OF_MEMORY;
+		}
 		return _ACCOUNT_ERROR_NONE;
 	}
 
 	if(!strcmp(appid, "com.samsung.samsung-account-front")){
 		ACCOUNT_DEBUG("Setting exception\n");
 		*verified_appid = _account_dup_text("com.samsung.samsung-account-front");
+		if (*verified_appid == NULL) {
+			ACCOUNT_FATAL("Memory Allocation Failed");
+			return _ACCOUNT_ERROR_OUT_OF_MEMORY;
+		}
 		return _ACCOUNT_ERROR_NONE;
 	}
 
@@ -937,6 +962,11 @@ int _account_get_represented_appid_from_db(sqlite3 *account_user_db, sqlite3 *ac
 		if(tmp) {
 			if(_account_type_query_app_id_exist_from_all_db(account_user_db, account_global_db, tmp) ==  _ACCOUNT_ERROR_NONE) {
 				*verified_appid = _account_dup_text(tmp);
+				if (*verified_appid == NULL) {
+					ACCOUNT_FATAL("Memory Allocation Failed");
+					error_code = _ACCOUNT_ERROR_OUT_OF_MEMORY;
+					break;
+				}
 				error_code = _ACCOUNT_ERROR_NONE;
 				_ACCOUNT_FREE(tmp);
 				break;
@@ -1053,12 +1083,19 @@ int _account_check_appid_group_with_package_name(const char* appid, char* packag
 static bool _account_add_capability_to_account_cb(const char* capability_type, int capability_value, account_s *account)
 {
 	account_capability_s *cap_data = (account_capability_s*)malloc(sizeof(account_capability_s));
-
-	if (cap_data == NULL)
+	if (cap_data == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
 		return FALSE;
+	}
+
 	ACCOUNT_MEMSET(cap_data, 0, sizeof(account_capability_s));
 
 	cap_data->type = _account_dup_text(capability_type);
+	if (cap_data->type == NULL) {
+		ACCOUNT_FATAL("_account_add_capability_to_account_cb :: malloc fail");
+		return FALSE;
+	}
+
 	cap_data->value = capability_value;
 	_INFO("cap_data->type = %s, cap_data->value = %d", cap_data->type, cap_data->value);
 
@@ -1072,15 +1109,30 @@ static bool _account_add_custom_to_account_cb(const char* key, const char* value
 	account_custom_s *custom_data = (account_custom_s*)malloc(sizeof(account_custom_s));
 
 	if (custom_data == NULL) {
-		ACCOUNT_DEBUG("_account_add_custom_to_account_cb :: malloc fail\n");
+		ACCOUNT_FATAL("_account_add_custom_to_account_cb :: malloc fail\n");
 		return FALSE;
 	}
 	ACCOUNT_MEMSET(custom_data, 0, sizeof(account_custom_s));
 
 	custom_data->account_id = account->id;
 	custom_data->app_id = _account_dup_text(account->package_name);
+	if (custom_data->app_id == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return FALSE;
+	}
+
 	custom_data->key = _account_dup_text(key);
+	if (custom_data->key == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return FALSE;
+	}
+
 	custom_data->value = _account_dup_text(value);
+	if (custom_data->value == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return FALSE;
+	}
+
 	_INFO("custom_data->key = %s, custom_data->value = %s", custom_data->key, custom_data->value);
 
 	account->custom_list = g_slist_append(account->custom_list, (gpointer)custom_data);
@@ -1447,6 +1499,10 @@ int _account_delete_account_by_package_name(sqlite3 *account_db_handle, const ch
 		current_appid = _account_get_current_appid(pid, uid);
 
 		package_name_temp = _account_dup_text(package_name);
+		if (package_name_temp == NULL) {
+			ACCOUNT_FATAL("Memory Allocation Failed");
+			return _ACCOUNT_ERROR_OUT_OF_MEMORY;
+		}
 
 		ACCOUNT_DEBUG( "DELETE: current_appid[%s], package_name[%s]", current_appid, package_name_temp);
 

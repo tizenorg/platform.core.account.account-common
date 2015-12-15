@@ -74,6 +74,11 @@ static int _get_app_mkey(unsigned char** mkey, int* mkey_len)
 	_INFO("before mkey_buffer->size=[%d]", mkey_buffer->size);
 	*mkey_len = mkey_buffer->size;
 	*mkey = (unsigned char *) malloc((*mkey_len)+1);
+	if (*mkey == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return CKMC_ERROR_OUT_OF_MEMORY;
+	}
+
 	memset(*mkey, 0, (*mkey_len)+1);
 	memcpy(*mkey, mkey_buffer->data, *mkey_len);
 //	(*mkey)[*mkey_len] = '\0';
@@ -98,6 +103,11 @@ static int _create_app_mkey(unsigned char **mkey, int *mkey_len)
 	_INFO("start _create_app_mkey");
 
 	random = (unsigned char *) malloc(MKEY_LEN);
+	if (random == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return CKMC_ERROR_OUT_OF_MEMORY;
+	}
+
 	_INFO("before _get_random");
 	ret = _get_random(MKEY_LEN, &random);
 	if(CKMC_ERROR_NONE != ret) {
@@ -148,6 +158,11 @@ static int _get_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, int
 
 	*dek_len = dek_buffer->size;
 	*dek = (unsigned char *) malloc((*dek_len)+1);
+	if (*dek == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return CKMC_ERROR_OUT_OF_MEMORY;
+	}
+
 	_INFO("before memcpy dek_buffer");
 	memcpy(*dek, dek_buffer->data, (*dek_len)+1);
 	_INFO("before dek_buffer free");
@@ -171,6 +186,11 @@ static int _create_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, 
 	sprintf(alias, "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
 
 	random = (unsigned char *) malloc(DEK_LEN);
+	if (random == NULL) {
+		ACCOUNT_FATAL("Memory Allocation Failed");
+		return CKMC_ERROR_OUT_OF_MEMORY;
+	}
+
 	ret = _get_random(DEK_LEN, &random);
 	if(CKMC_ERROR_NONE != ret) {
 		return CKMC_ERROR_UNKNOWN;
