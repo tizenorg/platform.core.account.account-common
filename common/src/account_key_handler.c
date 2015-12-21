@@ -41,9 +41,11 @@
 static int _get_random(int length, unsigned char **random)
 {
 	FILE *f;
+	int ret = -1;
 	/* read random file */
 	if ((f = fopen(RANDOM_FILE, "r")) != NULL) {
-		if (fread(*random, 1, length, f) != length)
+		ret = fread(*random, 1, length, f);
+		if (fclose(f) != 0 || ret != length)
 			return CKMC_ERROR_UNKNOWN;
 	}
 	return CKMC_ERROR_NONE;
@@ -69,6 +71,9 @@ static int _get_app_mkey(unsigned char **mkey, int *mkey_len)
 		_INFO("after mkey_buffer free");
 		return ret;
 	}
+
+	if (!mkey_buffer)
+		return CKMC_ERROR_UNKNOWN;
 
 	_INFO("before mkey_buffer->size=[%d]", mkey_buffer->size);
 	*mkey_len = mkey_buffer->size;
@@ -107,8 +112,11 @@ static int _create_app_mkey(unsigned char **mkey, int *mkey_len)
 
 	_INFO("before _get_random");
 	ret = _get_random(MKEY_LEN, &random);
-	if (CKMC_ERROR_NONE != ret)
+	if (CKMC_ERROR_NONE != ret) {
+		if (random)
+			free(random);
 		return CKMC_ERROR_UNKNOWN;
+	}
 
 	policy.password = "password";
 	policy.extractable = true;
@@ -140,7 +148,7 @@ static int _get_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, int
 	ckmc_raw_buffer_s *dek_buffer = NULL;
 	char alias[128] = {0,};
 
-	sprintf(alias, "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
+	snprintf(alias, sizeof(alias), "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
 
 	ret = ckmc_get_data(alias, password, &dek_buffer);
 	if (CKMC_ERROR_DB_ALIAS_UNKNOWN == ret) {
@@ -177,7 +185,7 @@ static int _create_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, 
 
 	_INFO("start _create_app_dek");
 
-	sprintf(alias, "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
+	snprintf(alias, sizeof(alias), "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
 
 	random = (unsigned char *)malloc(DEK_LEN);
 	if (random == NULL) {
@@ -186,8 +194,11 @@ static int _create_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, 
 	}
 
 	ret = _get_random(DEK_LEN, &random);
-	if (CKMC_ERROR_NONE != ret)
+	if (CKMC_ERROR_NONE != ret) {
+		if (random)
+			free(random);
 		return CKMC_ERROR_UNKNOWN;
+	}
 
 	policy.password = mkey;
 	policy.extractable = true;
@@ -229,6 +240,8 @@ int account_key_handler_get_account_dek(const char *alias, unsigned char **accou
 		ret = _create_app_mkey(&account_mkey, &mkey_len);
 		if (ret != CKMC_ERROR_NONE) {
 			_ERR("_create_app_mkey failed ret=[%d]", ret);
+			if (account_mkey)
+				free(account_mkey);
 			return ret;
 		}
 	}
@@ -261,7 +274,7 @@ static int clear_test_keys(const char* pkg_id)
 		return ret;
 	}
 
-	sprintf(alias, "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
+	snprintf(alias, sizeof(alias), "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
 	ret = ckmc_remove_alias(alias);
 	if(CKMC_ERROR_NONE != ret) {
 		return ret;
