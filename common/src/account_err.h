@@ -26,11 +26,10 @@ extern "C"
 {
 #endif
 
-typedef enum
-{
-	_ACCOUNT_ERROR_NONE                  = TIZEN_ERROR_NONE,                   /**< Successful */
-	_ACCOUNT_ERROR_OUT_OF_MEMORY             = TIZEN_ERROR_OUT_OF_MEMORY,              /**< Out of memory */
-	_ACCOUNT_ERROR_INVALID_PARAMETER         = TIZEN_ERROR_INVALID_PARAMETER,        /**< Invalid parameter */
+typedef enum {
+	_ACCOUNT_ERROR_NONE = TIZEN_ERROR_NONE,                   /**< Successful */
+	_ACCOUNT_ERROR_OUT_OF_MEMORY = TIZEN_ERROR_OUT_OF_MEMORY,              /**< Out of memory */
+	_ACCOUNT_ERROR_INVALID_PARAMETER = TIZEN_ERROR_INVALID_PARAMETER,        /**< Invalid parameter */
 
 	_ACCOUNT_ERROR_DUPLICATED = TIZEN_ERROR_ACCOUNT | 0x01, /**< Same user name exists in your application */
 	_ACCOUNT_ERROR_NO_DATA  = TIZEN_ERROR_NO_DATA, /**< Empty data */

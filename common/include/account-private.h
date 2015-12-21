@@ -55,40 +55,36 @@ extern "C"
 		SECURE_LOGE(": " fmt "\n", ##arg);
 
 #define ACCOUNT_RETURN_VAL(eval, expr, ret_val, X)\
-	if (!(eval)) \
-{\
-	expr; \
-	return ret_val;\
-} else {;}
+	if (!(eval)) {\
+		expr;\
+		return ret_val;\
+	} else {}
 
-#define ACCOUNT_SNPRINTF(dest,size,format,arg...)	\
-	do { \
-			snprintf(dest,size-1,format,##arg); \
-	}while(0)
-	/*	If the same pointer is passed to free twice, 	known as a double free. To avoid this, set pointers to
-NULL after passing 	them to free: free(NULL) is safe (it does nothing).
-	 */
+#define ACCOUNT_SNPRINTF(dest, size, format, arg...)\
+	do {\
+		snprintf(dest, size-1, format, ##arg);\
+	} while (0)
+	/*	If the same pointer is passed to free twice, known as a double free. To avoid this,
+		set pointers to NULL after passing them to free: free(NULL) is safe (it does nothing). */
 
-#define ACCOUNT_MEMSET(dest,value,size)	\
-	do { \
-			memset(dest,value,size); \
-	}while(0)
+#define ACCOUNT_MEMSET(dest, value, size)\
+	do {\
+		memset(dest, value, size);\
+	} while (0)
 
 #define ACCOUNT_CATCH_ERROR(eval, expr, error_val, X) \
-	if (!(eval)) \
-{\
-	expr; \
-	error_code = (error_val);\
-	goto CATCH;\
-} else {;}
+	if (!(eval)) {\
+		expr;\
+		error_code = (error_val);\
+		goto CATCH;\
+	} else {}
 
 #define ACCOUNT_CATCH_ERROR_P(eval, expr, error_val, X) \
-	if (!(eval)) \
-{\
+	if (!(eval)) {\
 	expr; \
 	*error_code = (error_val);\
 	goto CATCH;\
-} else {;}
+} else { }
 
 #define _ACCOUNT_FREE(ptr)	\
 		if (ptr != NULL) {	\
@@ -109,7 +105,6 @@ NULL after passing 	them to free: free(NULL) is safe (it does nothing).
 #define EXCHANGE_PKG_NAME		"activesync-ui"
 #define IMS_SERVICE_PKG_NAME		"ims-service"
 #define SAMSUNGACCOUNTFRONT_PKG_NAME  "com.samsung.samsung-account-front"
-//#define SAMSUNGACCOUNT_PKG_NAME  "gr47by21a5.SamsungAccount"
 #define SAMSUNGACCOUNT_PKG_NAME  "com.samsung.samsungaccount"
 #define CHATON_PKG_NAME			"xnq5eh9vop.ChatON"
 #define DROPBOX_PKG_NAME  "com.samsung.dropbox"
@@ -123,10 +118,10 @@ NULL after passing 	them to free: free(NULL) is safe (it does nothing).
 #define ACCOUNT_DATA_SERVICE_PROVIDER                     "http://tizen.org/account/data/service_provider"
 #define ACCOUNT_OPERATION_SIGNIN_OLD                      "http://tizen.org/account/operation/signin"
 
-// private account operation type
+/* private account operation type */
 #define ACCOUNT_OPERATION_FMM                             "http://tizen.org/account/operation/fmm"
 #define ACCOUNT_OPERATION_MYACCOUNT                       "http://tizen.org/account/operation/signin_from_myaccount"
-// End of private account operation type
+/* End of private account operation type */
 
 #define ACCOUNT_SUPPORTS_CAPABILITY_POST                  "http://tizen.org/account/capability/post"
 #define ACCOUNT_SUPPORTS_CAPABILITY_VOIP                  "http://tizen.org/account/capability/voip"
@@ -144,91 +139,77 @@ NULL after passing 	them to free: free(NULL) is safe (it does nothing).
 #define ACCOUNT_SUPPORTS_CAPABILITY_DOCOMO_SCHEDULE_MEMO  "http://tizen.org/account/capability/docomo"
 /* end of account uri list */
 
-typedef struct _account_sso_access_list_s
-{
+typedef struct _account_sso_access_list_s {
 	GList *acl;
-}account_sso_access_list_s;
+} account_sso_access_list_s;
 
-typedef struct _account_s
-{
-	int			id;
-	char*		user_name;
-	char*		email_address;
-	char*		display_name;
-	char*		icon_path;
-	char*		source;
-	char*		package_name;
-	char*		access_token;
-	char*		domain_name;		/*< domain name [Ex: google, facebook, twitter, samsung, ...] */
-//	char*		auth_method;
-	int			auth_type;
-	int			secret;
-	int			sync_support;
-	int			user_data_int[USER_INT_CNT];
-	char*		user_data_txt[USER_TXT_CNT];
-	GSList*		capablity_list;
-	GList*		account_list;
-	GSList*		custom_list;
-//	GList*		domain_list;
-//	GList*		mechanism_list;
-//	account_sso_access_list_s *acl;
-}account_s;
-
-typedef struct _capability_s
-{
+typedef struct _account_s {
 	int id;
-	char* type;
+	char *user_name;
+	char *email_address;
+	char *display_name;
+	char *icon_path;
+	char *source;
+	char *package_name;
+	char *access_token;
+	char *domain_name;		/*< domain name [Ex: google, facebook, twitter, samsung, ...] */
+	int auth_type;
+	int secret;
+	int sync_support;
+	int user_data_int[USER_INT_CNT];
+	char *user_data_txt[USER_TXT_CNT];
+	GSList *capablity_list;
+	GList *account_list;
+	GSList *custom_list;
+} account_s;
+
+typedef struct _capability_s {
+	int id;
+	char *type;
 	int value;
-	char* package_name;
-	char* user_name;
+	char *package_name;
+	char *user_name;
 	int account_id;
-}account_capability_s;
+} account_capability_s;
 
 
-typedef struct _account_custom_s
-{
-	int 	account_id;
-	char* 	app_id;
-	char*	key;
-	char*	value;
-}account_custom_s;
+typedef struct _account_custom_s {
+	int account_id;
+	char *app_id;
+	char *key;
+	char *value;
+} account_custom_s;
 
-typedef struct _account_type_s
-{
-	int 	id;
-	char* 	app_id;
-	char* 	service_provider_id;
-	char* 	icon_path;
-	char* 	small_icon_path;
-	bool 	multiple_account_support;
-	GSList*	label_list;
-//	GList*	account_type_list;
-	GSList*	provider_feature_list;
-}account_type_s;
+typedef struct _account_type_s {
+	int id;
+	char *app_id;
+	char *service_provider_id;
+	char *icon_path;
+	char *small_icon_path;
+	bool multiple_account_support;
+	GSList *label_list;
+	GSList *provider_feature_list;
+} account_type_s;
 
 
-typedef struct _label_s
-{
-	char* app_id;
-	char* label;
-	char* locale;
-}label_s;
+typedef struct _label_s {
+	char *app_id;
+	char *label;
+	char *locale;
+} label_s;
 
-typedef struct _provider_feature_s
-{
-	char* key;
-	char* app_id;
-}provider_feature_s;
+typedef struct _provider_feature_s {
+	char *key;
+	char *app_id;
+} provider_feature_s;
 
-typedef struct _account_auth_data_s
-{
-	GVariant* auth_data;
-}account_auth_data_s;
+typedef struct _account_auth_data_s {
+	GVariant *auth_data;
+} account_auth_data_s;
 
 /**
  * @brief   Enumarations for account handle fields.
  */
-
 typedef enum {
 	ACCOUNT_FIELD_NONE = -1,
 	ACCOUNT_FIELD_ID,
@@ -240,7 +221,6 @@ typedef enum {
 	ACCOUNT_FIELD_PACKAGE_NAME,
 	ACCOUNT_FIELD_ACCESS_TOKEN,
 	ACCOUNT_FIELD_DOMAIN_NAME,
-//	ACCOUNT_FIELD_AUTH_METHOD,
 	ACCOUNT_FIELD_AUTH_TYPE,
 	ACCOUNT_FIELD_SECRET,
 	ACCOUNT_FIELD_SYNC_SUPPORT,
@@ -260,7 +240,6 @@ typedef enum {
 /**
  * @brief	Enumarations for capability fields.
  */
-
 typedef enum {
 	CAPABILITY_FIELD_NONE = -1,
 	CAPABILITY_FIELD_ID,
@@ -270,7 +249,7 @@ typedef enum {
 	CAPABILITY_FIELD_USER_NAME,
 	CAPABILITY_FIELD_ACCOUNT_ID,
 	CAPABILITY_FIELD_END,
-}CAPABILITY_DB_IDX;
+} CAPABILITY_DB_IDX;
 
 
 typedef enum {
@@ -280,7 +259,7 @@ typedef enum {
 	ACCOUNT_CUSTOM_FIELD_KEY,
 	ACCOUNT_CUSTOM_FIELD_VALUE,
 	ACCOUNT_CUSTOM_FIELD_END,
-}ACCOUNT_CUSTOM_DB_IDX;
+} ACCOUNT_CUSTOM_DB_IDX;
 
 typedef enum {
 	ACCOUNT_TYPE_FIELD_NONE = -1,
@@ -291,7 +270,7 @@ typedef enum {
 	ACCOUNT_TYPE_FIELD_SMALL_ICON_PATH,
 	ACCOUNT_TYPE_FIELD_MULTIPLE_ACCOUNT_SUPPORT,
 	ACCOUNT_TYPE_FIELD_END,
-}ACCOUNT_TYPE_DB_IDX;
+} ACCOUNT_TYPE_DB_IDX;
 
 typedef enum {
 	LABEL_FIELD_NONE = -1,
@@ -299,16 +278,16 @@ typedef enum {
 	LABEL_FIELD_LABEL,
 	LABEL_FIELD_LOCALE,
 	LABEL_FIELD_END,
-}LABEL_DB_IDX;
+} LABEL_DB_IDX;
 
 typedef enum {
 	PROVIDER_FEATURE_FIELD_NONE = -1,
 	PROVIDER_FEATURE_FIELD_APP_ID,
 	PROVIDER_FEATURE_FIELD_KEY,
 	PROVIDER_FEATURE_FIELD_END,
-}PROVIDER_FEATURE_DB_IDX;
+} PROVIDER_FEATURE_DB_IDX;
 
-typedef struct GSList 		account_iterator_s;
+typedef struct GSList account_iterator_s;
 
 #define ACCOUNT_SSO_MAX_LIST_COUNT 100
 #define ACCOUNT_SSO_MAX_APP_NAME_LENGTH 128
@@ -332,7 +311,7 @@ typedef struct GSList 		account_iterator_s;
 #define FACEBOOK_SDK_APPID "com.samsung.facebook-service"
 #define FACEBOOK_APPID "com.samsung.facebook"
 
-//Used by both accounts and gtme. However as of now, gtme does not have any dependency on account, so duplicating the same
+/* Used by both accounts and gtme. However as of now, gtme does not have any dependency on account, so duplicating the same */
 #define MAX_SYS_CONTEXT_SIZE 1024
 
 #ifdef __cplusplus

@@ -26,8 +26,7 @@ extern "C"
 {
 #endif
 
-typedef enum
-{
+typedef enum {
 	_ACCOUNT_ERROR_NONE                  = TIZEN_ERROR_NONE,                   /**< Successful */
 	_ACCOUNT_ERROR_OUT_OF_MEMORY             = TIZEN_ERROR_OUT_OF_MEMORY,              /**< Out of memory */
 	_ACCOUNT_ERROR_INVALID_PARAMETER         = TIZEN_ERROR_INVALID_PARAMETER,        /**< Invalid parameter */

@@ -19,87 +19,84 @@
 #include "account-private.h"
 #include "dbg.h"
 #include "account_free.h"
+#include "account_err.h"
 
-int _account_glist_account_free(GList* list)
+int _account_glist_account_free(GList *list)
 {
-	if(!list){
-		return -1;
-	}
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GList* iter;
+	GList *iter;
 
 	for (iter = list; iter != NULL; iter = g_list_next(iter)) {
-		account_s *account_record = (account_s*)iter->data;
+		account_s *account_record = (account_s *)iter->data;
 		_account_free_account_with_items(account_record);
 	}
 
 	g_list_free(list);
 	list = NULL;
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_gslist_account_free(GSList *list)
 {
-	if(!list){
-		return -1;
-	}
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GSList* iter;
+	GSList *iter;
 
 	for (iter = list; iter != NULL; iter = g_slist_next(iter)) {
-		account_s *account_data = (account_s*)iter->data;
+		account_s *account_data = (account_s *)iter->data;
 		_account_free_account_with_items(account_data);
 	}
 
 	g_slist_free(list);
 	list = NULL;
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
-int _account_gslist_capability_free(GSList* list)
+int _account_gslist_capability_free(GSList *list)
 {
-	if(!list){
-		return -1;
-	}
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GSList* iter;
+	GSList *iter;
 
 	for (iter = list; iter != NULL; iter = g_slist_next(iter)) {
-		account_capability_s *cap_data = (account_capability_s*)iter->data;
+		account_capability_s *cap_data = (account_capability_s *)iter->data;
 		_account_free_capability_with_items(cap_data);
 	}
 
 	g_slist_free(list);
 	list = NULL;
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
-int _account_gslist_custom_free(GSList* list)
+int _account_gslist_custom_free(GSList *list)
 {
-	if(!list){
-		return -1;
-	}
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GSList* iter;
+	GSList *iter;
 
 	for (iter = list; iter != NULL; iter = g_slist_next(iter)) {
-		account_custom_s *custom_data = (account_custom_s*)iter->data;
+		account_custom_s *custom_data = (account_custom_s *)iter->data;
 		_account_free_custom_with_items(custom_data);
 	}
 
 	g_slist_free(list);
 	list = NULL;
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_free_capability_with_items(account_capability_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_ACCOUNT_FREE(data->type);
 	_ACCOUNT_FREE(data->package_name);
@@ -107,13 +104,13 @@ int _account_free_capability_with_items(account_capability_s *data)
 
 	_ACCOUNT_FREE(data);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_free_custom_with_items(account_custom_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_ACCOUNT_FREE(data->app_id);
 	_ACCOUNT_FREE(data->key);
@@ -121,13 +118,13 @@ int _account_free_custom_with_items(account_custom_s *data)
 
 	_ACCOUNT_FREE(data);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_free_account_with_items(account_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_ACCOUNT_FREE(data->user_name);
 	_ACCOUNT_FREE(data->email_address);
@@ -139,7 +136,7 @@ int _account_free_account_with_items(account_s *data)
 	_ACCOUNT_FREE(data->access_token);
 
 	int i;
-	for(i=0;i<USER_TXT_CNT;i++)
+	for (i = 0; i < USER_TXT_CNT; i++)
 		_ACCOUNT_FREE(data->user_data_txt[i]);
 
 	_account_gslist_capability_free(data->capablity_list);
@@ -148,13 +145,13 @@ int _account_free_account_with_items(account_s *data)
 
 	_ACCOUNT_FREE(data);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_type_free_label_with_items(label_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_ACCOUNT_FREE(data->app_id);
 	_ACCOUNT_FREE(data->label);
@@ -162,68 +159,68 @@ int _account_type_free_label_with_items(label_s *data)
 
 	_ACCOUNT_FREE(data);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_type_free_feature_with_items(provider_feature_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_ACCOUNT_FREE(data->app_id);
 	_ACCOUNT_FREE(data->key);
 
 	_ACCOUNT_FREE(data);
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
-int _account_type_gslist_feature_free(GSList* list)
+int _account_type_gslist_feature_free(GSList *list)
 {
-	if(!list)
-		return -1;
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GSList* iter;
+	GSList *iter;
 
 	for (iter = list; iter != NULL; iter = g_slist_next(iter)) {
-		provider_feature_s *feature_data = (provider_feature_s*)iter->data;
+		provider_feature_s *feature_data = (provider_feature_s *)iter->data;
 		_account_type_free_feature_with_items(feature_data);
 	}
 
 	g_slist_free(list);
 	list = NULL;
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
-int _account_type_gslist_label_free(GSList* list)
+int _account_type_gslist_label_free(GSList *list)
 {
-	if(!list)
-		return -1;
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GSList* iter;
+	GSList *iter;
 
 	for (iter = list; iter != NULL; iter = g_slist_next(iter)) {
-		label_s *label_data = (label_s*)iter->data;
+		label_s *label_data = (label_s *)iter->data;
 		_account_type_free_label_with_items(label_data);
 	}
 
 	g_slist_free(list);
 	list = NULL;
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
 int _account_type_item_free(account_type_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_ACCOUNT_FREE(data->app_id);
 	_ACCOUNT_FREE(data->service_provider_id);
 	_ACCOUNT_FREE(data->icon_path);
 	_ACCOUNT_FREE(data->small_icon_path);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 /*
 int _account_type_glist_free(GList* list)
@@ -247,38 +244,35 @@ int _account_type_glist_free(GList* list)
 */
 int _account_type_free_account_type_with_items(account_type_s *data)
 {
-	if(!data)
-		return -1;
+	if (!data)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
 	_account_type_item_free(data);
 
 	_account_type_gslist_label_free(data->label_list);
 	_account_type_gslist_feature_free(data->provider_feature_list);
-//	_account_type_glist_free(data->account_type_list);
 
 	_ACCOUNT_FREE(data);
 
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }
 
-int _account_type_gslist_account_type_free(GSList* list)
+int _account_type_gslist_account_type_free(GSList *list)
 {
 	_INFO("_account_type_gslist_account_type_free(GSList* list) start");
-	if(!list)
-		return -1;
+	if (!list)
+		return _ACCOUNT_ERROR_INVALID_PARAMETER;
 
-	GSList* iter;
+	GSList *iter;
 
 	for (iter = list; iter != NULL; iter = g_slist_next(iter)) {
-		account_type_s *account_type_data = (account_type_s*)iter->data;
-		_INFO("before _account_type_free_account_type_with_items(account_type_data)");
+		account_type_s *account_type_data = (account_type_s *)iter->data;
 		_account_type_free_account_type_with_items(account_type_data);
-		_INFO("after _account_type_free_account_type_with_items(account_type_data)");
 	}
 
 	g_slist_free(list);
 	list = NULL;
 
 	_INFO("_account_type_gslist_account_type_free(GSList* list) end");
-	return 0;
+	return _ACCOUNT_ERROR_NONE;
 }

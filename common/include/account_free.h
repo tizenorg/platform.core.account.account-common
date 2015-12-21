@@ -31,17 +31,16 @@ extern "C"
 #include <glib.h>
 #include <account-private.h>
 
-int _account_glist_account_free(GList* list);
+int _account_glist_account_free(GList *list);
 int _account_gslist_account_free(GSList *list);
-int _account_gslist_capability_free(GSList* list);
-int _account_gslist_custom_free(GSList* list);
+int _account_gslist_capability_free(GSList *list);
+int _account_gslist_custom_free(GSList *list);
 int _account_free_account_with_items(account_s *data);
 int _account_free_capability_with_items(account_capability_s *data);
 int _account_free_custom_with_items(account_custom_s *data);
-//int _account_type_glist_free(GList* list);
 int _account_type_gslist_account_type_free(GSList *list);
-int _account_type_gslist_label_free(GSList* list);
-int _account_type_gslist_feature_free(GSList* list);
+int _account_type_gslist_label_free(GSList *list);
+int _account_type_gslist_feature_free(GSList *list);
 int _account_type_item_free(account_type_s *data);
 int _account_type_free_account_type_with_items(account_type_s *data);
 int _account_type_free_label_with_items(label_s *data);

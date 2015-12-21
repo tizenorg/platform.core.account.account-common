@@ -23,7 +23,7 @@
 
 #include "account-private.h"
 
-//ACCOUNT_TABLE
+/* ACCOUNT_TABLE */
 #define ACCOUNT_SCHEMA  "create table account \n"\
 	    "(\n"\
 "_id INTEGER PRIMARY KEY AUTOINCREMENT, "\
@@ -50,7 +50,7 @@
 "int_custom4 INTEGER "\
 ");"
 
-//CAPABILITY_TABLE
+/* CAPABILITY_TABLE */
 #define CAPABILITY_SCHEMA  "create table capability \n"\
 	    "(\n"\
 "_id INTEGER PRIMARY KEY AUTOINCREMENT, "\
@@ -62,7 +62,7 @@
 "FOREIGN KEY (account_id) REFERENCES account(_id) "\
 ");"
 
-//ACCOUNT_CUSTOM_TABLE
+/* ACCOUNT_CUSTOM_TABLE */
 #define ACCOUNT_CUSTOM_SCHEMA  "create table account_custom \n"\
 	    "(\n"\
 "AccountId INTEGER, "\
@@ -71,7 +71,7 @@
 "Value TEXT "\
 ");"
 
-//ACCOUNT_TYPE_TABLE
+/* ACCOUNT_TYPE_TABLE */
 #define ACCOUNT_TYPE_SCHEMA "create table account_type \n"\
 	    "(\n"\
 "_id INTEGER PRIMARY KEY AUTOINCREMENT, "\
@@ -82,7 +82,7 @@
 "MultipleAccountSupport INTEGER "\
 ");"
 
-//LABEL_TABLE
+/* LABEL_TABLE */
 #define LABEL_SCHEMA "create table label \n"\
 	    "(\n"\
 "AppId TEXT, "\
@@ -90,7 +90,7 @@
 "Locale TEXT"\
 ");"
 
-//PROVIDER_FEATURE_TABLE
+/* PROVIDER_FEATURE_TABLE */
 #define PROVIDER_FEATURE_SCHEMA "create table provider_feature \n"\
 	    "(\n"\
 "app_id TEXT, "\
@@ -99,32 +99,27 @@
 
 #define OWNER_ROOT 0
 #define GLOBAL_USER tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-//#define ACCOUNT_DB_PATH "/usr/dbspace/.account.db"
-//#define USER_DB_DIR tzplatform_getenv(TZ_USER_DB)
-//#define ACCOUNT_GLOBAL_DB_PATH "/usr/dbspace/.account.db"
-//#define ACCOUNT_GLOBAL_JN_PATH "/usr/dbspace/.account.db-journal"
-//#define ACCOUNT_DB_PATH tzplatform_mkpath(TZ_USER_DB, "/.account.db")
-//#define ACCOUNT_JN_PATH tzplatform_mkpath(TZ_USER_DB, "/.account.db-journal")
-#define ACCOUNT_GET_USER_DB_DIR(dest,size,uid) \
+
+#define ACCOUNT_GET_USER_DB_DIR(dest, size, uid) \
 	    do { \
-			            snprintf(dest,size-1,"%s%d", "/usr/dbspace/", uid); \
-			    }while(0)
-#define ACCOUNT_GET_GLOBAL_DB_PATH(dest,size) \
+			snprintf(dest, size-1, "%s%d", "/usr/dbspace/", uid); \
+		} while (0)
+#define ACCOUNT_GET_GLOBAL_DB_PATH(dest, size) \
 	    do { \
-			            snprintf(dest,size-1,"%s", "/usr/dbspace/.account.db"); \
-			    }while(0)
-#define ACCOUNT_GET_GLOBAL_JN_PATH(dest,size) \
+			snprintf(dest, size-1, "%s", "/usr/dbspace/.account.db"); \
+		} while (0)
+#define ACCOUNT_GET_GLOBAL_JN_PATH(dest, size) \
 	    do { \
-			            snprintf(dest,size-1,"%s", "/usr/dbspace/.account.db-journal"); \
-			    }while(0)
-#define ACCOUNT_GET_USER_DB_PATH(dest,size,uid) \
+			snprintf(dest, size-1, "%s", "/usr/dbspace/.account.db-journal"); \
+		} while (0)
+#define ACCOUNT_GET_USER_DB_PATH(dest, size, uid) \
 	    do { \
-			            snprintf(dest,size-1,"%s%d%s", "/usr/dbspace/", uid, "/.account.db"); \
-			    }while(0)
-#define ACCOUNT_GET_USER_JN_PATH(dest,size,uid) \
+			snprintf(dest, size-1, "%s%d%s", "/usr/dbspace/", uid, "/.account.db"); \
+		} while (0)
+#define ACCOUNT_GET_USER_JN_PATH(dest, size, uid) \
 	    do { \
-			            snprintf(dest,size-1,"%s%d%s", "/usr/dbspace/", uid, "/.account.db-journal"); \
-			    }while(0)
+			snprintf(dest, size-1, "%s%d%s", "/usr/dbspace/", uid, "/.account.db-journal"); \
+		} while (0)
 #define ACCOUNT_TABLE "account"
 #define CAPABILITY_TABLE "capability"
 #define ACCOUNT_CUSTOM_TABLE "account_custom"
@@ -136,13 +131,13 @@
 #define ACCOUNT_TABLE_TOTAL_COUNT   6
 
 
-typedef sqlite3_stmt* account_stmt;
-typedef bool (*account_add_capability_cb)(const char* capability_type, int capability_state, account_s *account);
-typedef bool (*account_add_custom_cb)(const char* key, const char* value, account_s *account);
+typedef sqlite3_stmt * account_stmt;
+typedef bool (*account_add_capability_cb)(const char *capability_type, int capability_state, account_s *account);
+typedef bool (*account_add_custom_cb)(const char *key, const char *value, account_s *account);
 
 char *_account_dup_text(const char *text_data);
 
-char* _account_get_current_appid(int pid, uid_t uid);
+char *_account_get_current_appid(int pid, uid_t uid);
 
 int _remove_sensitive_info_from_non_owning_account(account_s *account, int caller_pid, uid_t uid);
 int _remove_sensitive_info_from_non_owning_account_list(GList *account_list, int caller_pid, uid_t uid);
@@ -154,7 +149,7 @@ int _account_db_err_code(sqlite3 *account_db_handle);
 int _account_execute_query(sqlite3 *account_db_handle, const char *query);
 int _account_begin_transaction(sqlite3 *account_db_handle);
 int _account_end_transaction(sqlite3 *account_db_handle, bool is_success);
-int _account_get_next_sequence(sqlite3 *account_db_handle, const char *pszName);	//for account & account_type insertion
+int _account_get_next_sequence(sqlite3 *account_db_handle, const char *pszName);
 account_stmt _account_prepare_query(sqlite3 *account_db_handle, char *query);
 
 int _account_query_bind_int(account_stmt pStmt, int pos, int num);
@@ -168,27 +163,23 @@ void _account_convert_column_to_capability(account_stmt hstmt, account_capabilit
 void _account_convert_column_to_custom(account_stmt hstmt, account_custom_s *custom_record);
 
 
-int _account_get_record_count(sqlite3 *account_db_handle, const char* query);
+int _account_get_record_count(sqlite3 *account_db_handle, const char *query);
 int _account_create_all_tables(sqlite3 *account_db_handle);
 int _account_check_is_all_table_exists(sqlite3 *account_db_handle);
-int _account_db_handle_close(sqlite3* account_db_handle);
-//int _account_db_open(int mode, int pid, int uid);
-//int _account_db_close(void);
-//int _account_global_db_open(void);
-//int _account_global_db_close(void);
+int _account_db_handle_close(sqlite3 *account_db_handle);
 
 
 int _account_type_query_app_id_exist_from_all_db(sqlite3 *account_user_db, sqlite3 *account_global_db, const char *app_id);
-int _account_get_represented_appid_from_db(sqlite3 *account_user_db, sqlite3 *account_global_db, const char* appid, uid_t uid, char** verified_appid);
-int _account_check_appid_group_with_package_name(const char* appid, char* package_name, uid_t uid);
+int _account_get_represented_appid_from_db(sqlite3 *account_user_db, sqlite3 *account_global_db, const char *appid, uid_t uid, char **verified_appid);
+int _account_check_appid_group_with_package_name(const char *appid, char *package_name, uid_t uid);
 
-int _account_query_capability_by_account_id(sqlite3 *account_db_handle, account_add_capability_cb callback, int account_id, void *user_data );
-int _account_query_custom_by_account_id(sqlite3 *account_db_handle, account_add_custom_cb callback, int account_id, void *user_data );
-GList* _account_query_account_by_package_name(sqlite3 *account_db_handle, const char* package_name, int *error_code, int pid, uid_t uid);
+int _account_query_capability_by_account_id(sqlite3 *account_db_handle, account_add_capability_cb callback, int account_id, void *user_data);
+int _account_query_custom_by_account_id(sqlite3 *account_db_handle, account_add_custom_cb callback, int account_id, void *user_data);
+GList *_account_query_account_by_package_name(sqlite3 *account_db_handle, const char *package_name, int *error_code, int pid, uid_t uid);
 
-int _account_check_duplicated(sqlite3 *account_db_handle, account_s *data, const char* verified_appid, uid_t uid);
+int _account_check_duplicated(sqlite3 *account_db_handle, account_s *data, const char *verified_appid, uid_t uid);
 
-int _account_delete_account_by_package_name(sqlite3* account_db_handle, const char *package_name, gboolean permission, int pid, uid_t uid);
+int _account_delete_account_by_package_name(sqlite3 *account_db_handle, const char *package_name, gboolean permission, int pid, uid_t uid);
 
 
 int _account_type_convert_account_to_sql(account_type_s *account_type, account_stmt hstmt, char *sql_value);
@@ -197,5 +188,5 @@ void _account_type_convert_column_to_label(account_stmt hstmt, label_s *label_re
 void _account_type_convert_column_to_account_type(account_stmt hstmt, account_type_s *account_type_record);
 
 gboolean _account_type_check_duplicated(sqlite3 *account_db_handle, const char *app_id);
-int _account_type_insert_to_db(sqlite3 *account_db_handle, account_type_s* account_type, int* account_type_id);
-int _account_type_delete_by_app_id(sqlite3 *account_db_handle, const char* app_id);
+int _account_type_insert_to_db(sqlite3 *account_db_handle, account_type_s *account_type, int *account_type_id);
+int _account_type_delete_by_app_id(sqlite3 *account_db_handle, const char *app_id);

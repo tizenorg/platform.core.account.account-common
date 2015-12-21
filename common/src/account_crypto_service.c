@@ -35,9 +35,6 @@
 #define AES_256_KEY_SIZE 32
 #define AES_CBC_IV "01234567890123456"
 
-//#define FALSE 0
-//#define TRUE  1
-
 #define CRYPTO_ERROR -1
 #define CRYPTO_ERROR_NONE 0
 #define CRYPTO_ERROR_INVALID_PARAMETER TIZEN_ERROR_INVALID_PARAMETER
@@ -49,32 +46,31 @@ static int initialized = FALSE;
 
 static inline void initialize()
 {
-    if(!initialized) {
-        ERR_load_crypto_strings();
-        OpenSSL_add_all_algorithms();
+	if (!initialized) {
+		ERR_load_crypto_strings();
+		OpenSSL_add_all_algorithms();
 		initialized = TRUE;
-    }
+	}
 }
 
-static int _encrypt_aes_cbc(const unsigned char* key, const int key_len, const unsigned char* data, const int data_len,
-                    char** encrypted_data, int* enc_data_len)
+static int _encrypt_aes_cbc(const unsigned char *key, const int key_len, const unsigned char *data, const int data_len,
+		char **encrypted_data, int *enc_data_len)
 {
-    EVP_CIPHER_CTX *ctx;
-    int len;
-    unsigned char *ciphertext = NULL;
-    int ciphertext_len;
-    unsigned char *iv = (unsigned char *)AES_CBC_IV;
-    int ret = CRYPTO_ERROR_NONE;
+	EVP_CIPHER_CTX *ctx;
+	int len;
+	unsigned char *ciphertext = NULL;
+	int ciphertext_len;
+	unsigned char *iv = (unsigned char *)AES_CBC_IV;
+	int ret = CRYPTO_ERROR_NONE;
 
-    initialize();
+	initialize();
 
-    /* check input paramter */
-    if( key_len != 32 ) {
-        return CRYPTO_ERROR_INVALID_PARAMETER;
-    }
+	/* check input paramter */
+	if (key_len != 32)
+		return CRYPTO_ERROR_INVALID_PARAMETER;
 
-    // assing a enough memory for decryption.
-    ciphertext = (unsigned char*) malloc(data_len + 32);
+	/* assing a enough memory for decryption. */
+	ciphertext = (unsigned char *) malloc(data_len + 32);
 	if (ciphertext == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
 		return CRYPTO_ERROR_OUT_OF_MEMORY;
@@ -83,78 +79,77 @@ static int _encrypt_aes_cbc(const unsigned char* key, const int key_len, const u
 	ACCOUNT_MEMSET(ciphertext, 0, data_len + 32);
 
 	_INFO("before EVP_CIPHER_CTX_new");
-    /* Create and initialise the context */
-    if(!(ctx = EVP_CIPHER_CTX_new())) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
+	/* Create and initialise the context */
+	if (!(ctx = EVP_CIPHER_CTX_new())) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
 	_INFO("after EVP_CIPHER_CTX_new success");
 
 	_INFO("before EVP_EncryptInit_ex");
-    /* Initialise the encryption operation. IMPORTANT - ensure you use a key
-     * and IV size appropriate for your cipher
-     * In this example we are using 256 bit AES (i.e. a 256 bit key). The
-     * IV size for *most* modes is the same as the block size. For AES this
-     * is 128 bits */
-    if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv)) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
+	/* Initialise the encryption operation. IMPORTANT - ensure you use a key
+	 * and IV size appropriate for your cipher
+	 * In this example we are using 256 bit AES (i.e. a 256 bit key). The
+	 * IV size for *most* modes is the same as the block size. For AES this
+	 * is 128 bits */
+	if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv)) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
 	_INFO("after EVP_EncryptInit_ex success");
 
 	_INFO("before EVP_EncryptUpdate, data = %s, data_len=[%d]", data, data_len);
-    /* Provide the message to be encrypted, and obtain the encrypted output.
-     * EVP_EncryptUpdate can be called multiple times if necessary
-     */
-    if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, data, data_len)) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
-    ciphertext_len = len;
+	/* Provide the message to be encrypted, and obtain the encrypted output.
+	 * EVP_EncryptUpdate can be called multiple times if necessary
+	 */
+	if (1 != EVP_EncryptUpdate(ctx, ciphertext, &len, data, data_len)) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
+	ciphertext_len = len;
 	_INFO("after EVP_EncryptUpdate, data = %s, data_len=[%d]", data, data_len);
 
 	_INFO("before EVP_EncryptFinal_ex, ciphertext_len=[%d]", ciphertext_len);
-    /* Finalise the encryption. Further ciphertext bytes may be written at
-     * this stage.
-     */
-    if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
-    ciphertext_len += len;
+	/* Finalise the encryption. Further ciphertext bytes may be written at
+	 * this stage.
+	 */
+	if (1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
+	ciphertext_len += len;
 	_INFO("after EVP_EncryptFinal_ex, ciphertext_len=[%d]", ciphertext_len);
 
-    *encrypted_data = (char *)ciphertext;
-    *enc_data_len = ciphertext_len;
+	*encrypted_data = (char *)ciphertext;
+	*enc_data_len = ciphertext_len;
 
-    ret = CRYPTO_ERROR_NONE;
+	ret = CRYPTO_ERROR_NONE;
 error:
-    if(ctx != NULL)
-        EVP_CIPHER_CTX_free(ctx);
-    if(ret != CRYPTO_ERROR_NONE && ciphertext != NULL)
-        free(ciphertext);
-    return ret;
+	if (ctx != NULL)
+		EVP_CIPHER_CTX_free(ctx);
+	if (ret != CRYPTO_ERROR_NONE && ciphertext != NULL)
+		free(ciphertext);
+	return ret;
 }
 
-static int _decrypt_aes_cbc(const unsigned char* key, const int key_len, const unsigned char* data, const int data_len,
-                    char** decrypted_data, int* dec_data_len)
+static int _decrypt_aes_cbc(const unsigned char *key, const int key_len, const unsigned char *data, const int data_len,
+		char **decrypted_data, int *dec_data_len)
 {
-    EVP_CIPHER_CTX *ctx;
-    int len;
-    unsigned char* plaintext = NULL;
-    int plaintext_len;
-    unsigned char *iv = (unsigned char *)AES_CBC_IV;
-    int ret = CRYPTO_ERROR_NONE;
+	EVP_CIPHER_CTX *ctx;
+	int len;
+	unsigned char *plaintext = NULL;
+	int plaintext_len;
+	unsigned char *iv = (unsigned char *)AES_CBC_IV;
+	int ret = CRYPTO_ERROR_NONE;
 
-    initialize();
+	initialize();
 
-    /* check input paramter */
-    if( key_len != 32 ) {
-        return CRYPTO_ERROR_INVALID_PARAMETER;
-    }
+	/* check input paramter */
+	if (key_len != 32)
+		return CRYPTO_ERROR_INVALID_PARAMETER;
 
-    // assing a enough memory for decryption.
-    plaintext = (unsigned char*) malloc(data_len);
+	/* assing a enough memory for decryption. */
+	plaintext = (unsigned char *)malloc(data_len);
 	if (plaintext == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
 		return CRYPTO_ERROR_OUT_OF_MEMORY;
@@ -163,59 +158,59 @@ static int _decrypt_aes_cbc(const unsigned char* key, const int key_len, const u
 	ACCOUNT_MEMSET(plaintext, 0, data_len);
 
 	_INFO("before EVP_CIPHER_CTX_new");
-    /* Create and initialise the context */
-    if(!(ctx = EVP_CIPHER_CTX_new())) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
+	/* Create and initialise the context */
+	if (!(ctx = EVP_CIPHER_CTX_new())) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
 	_INFO("after EVP_CIPHER_CTX_new");
 
 	_INFO("before EVP_DecryptInit_ex");
-    /* Initialise the decryption operation. IMPORTANT - ensure you use a key
-     * and IV size appropriate for your cipher
-     * In this example we are using 256 bit AES (i.e. a 256 bit key). The
-     * IV size for *most* modes is the same as the block size. For AES this
-     * is 128 bits */
-    if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv)) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
+	/* Initialise the decryption operation. IMPORTANT - ensure you use a key
+	 * and IV size appropriate for your cipher
+	 * In this example we are using 256 bit AES (i.e. a 256 bit key). The
+	 * IV size for *most* modes is the same as the block size. For AES this
+	 * is 128 bits */
+	if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv)) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
 	_INFO("after EVP_DecryptInit_ex");
 
 	_INFO("before EVP_DecryptUpdate, data_len=[%d]", data_len);
-    /* Provide the message to be decrypted, and obtain the plaintext output.
-     * EVP_DecryptUpdate can be called multiple times if necessary
-     */
-    if(1 != EVP_DecryptUpdate(ctx, plaintext, &len, data, data_len)) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
-    plaintext_len = len;
+	/* Provide the message to be decrypted, and obtain the plaintext output.
+	 * EVP_DecryptUpdate can be called multiple times if necessary
+	 */
+	if (1 != EVP_DecryptUpdate(ctx, plaintext, &len, data, data_len)) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
+	plaintext_len = len;
 	_INFO("after EVP_DecryptUpdate, data_len=[%d], plaintext_len=[%d]", data_len, plaintext_len);
 
 	_INFO("before EVP_EncryptFinal_ex");
-    /* Finalise the decryption. Further plaintext bytes may be written at
-     * this stage.
-     */
-    if(1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len)) {
-        ret = CRYPTO_ERROR;
-        goto error;
-    }
-    plaintext_len += len;
-	_INFO("after EVP_EncryptFinal_ex, plaintext_len=[%d]",plaintext_len);
+	/* Finalise the decryption. Further plaintext bytes may be written at
+	 * this stage.
+	 */
+	if (1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len)) {
+		ret = CRYPTO_ERROR;
+		goto error;
+	}
+	plaintext_len += len;
+	_INFO("after EVP_EncryptFinal_ex, plaintext_len=[%d]", plaintext_len);
 
-    *decrypted_data = (char *)plaintext;
+	*decrypted_data = (char *)plaintext;
 	(*decrypted_data)[plaintext_len] = '\0';
-    *dec_data_len = plaintext_len;
+	*dec_data_len = plaintext_len;
 	_INFO("after decrypted_data = (char *)plaintext;, *decrypted_data = %s", *decrypted_data);
 
-    ret = CRYPTO_ERROR_NONE;
+	ret = CRYPTO_ERROR_NONE;
 error:
-    if(ctx != NULL)
-        EVP_CIPHER_CTX_free(ctx);
-    if(ret != CRYPTO_ERROR_NONE && plaintext != NULL)
-        free(plaintext);
-    return ret;
+	if (ctx != NULL)
+		EVP_CIPHER_CTX_free(ctx);
+	if (ret != CRYPTO_ERROR_NONE && plaintext != NULL)
+		free(plaintext);
+	return ret;
 }
 
 static int _encrypt_data(unsigned char *data, const int data_len, char **pp_encrypted_data)
@@ -230,7 +225,7 @@ static int _encrypt_data(unsigned char *data, const int data_len, char **pp_encr
 
 	ret = account_key_handler_get_account_dek(alias, &key, &key_len);
 	if (ret != _ACCOUNT_ERROR_NONE) {
-		//To Do : fail
+		/* To Do : fail */
 		_ERR("_account_key_handler_get_account_dek failed");
 	}
 	_INFO("after _account_key_handler_get_account_dek");
@@ -239,7 +234,7 @@ static int _encrypt_data(unsigned char *data, const int data_len, char **pp_encr
 
 	ret = _encrypt_aes_cbc(key, key_len, data, data_len, pp_encrypted_data, &enc_data_len);
 	if (ret != _ACCOUNT_ERROR_NONE) {
-		//To Do : fail
+		/* To Do : fail */
 		_ERR("_encrypt_aes_cbc failed");
 	}
 
@@ -260,14 +255,14 @@ static int _decrypt_data(unsigned char *data, const int data_len, char **pp_decr
 	_INFO("before _account_key_handler_get_account_dek");
 	ret = account_key_handler_get_account_dek(alias, &key, &key_len);
 	if (ret != _ACCOUNT_ERROR_NONE) {
-		//To Do : fail
+		/* To Do : fail */
 		_ERR("_account_key_handler_get_account_dek failed");
 	}
 
 	_INFO("before _decrypt_aes_cbc");
 	ret = _decrypt_aes_cbc(key, key_len, data, data_len, pp_decrypted_data, &dec_data_len);
 	if (ret != _ACCOUNT_ERROR_NONE) {
-		//To Do : fail
+		/* To Do : fail */
 		_ERR("_decrypt_aes_cbc failed");
 	}
 	_INFO("after _decrypt_aes_cbc, dec_data = %s", *pp_decrypted_data);
@@ -287,12 +282,11 @@ int encrypt_access_token(account_s *account)
 		_INFO("after _encrypt_data, ret=[%d]", ret);
 		free(account->access_token);
 		account->access_token = NULL;
-		if( ret == _ACCOUNT_ERROR_NONE) {
+		if (ret == _ACCOUNT_ERROR_NONE) {
 			account->access_token = encrypted_token;
 			_INFO("after access_token, encrypted_token size=[%d]", strlen(account->access_token));
-		}
-		else {
-			//To Do : fail
+		} else {
+			/* To Do : fail */
 			_ERR("_encrypt_data fail");
 			return ret;
 		}
@@ -310,10 +304,10 @@ int decrypt_access_token(account_s *account)
 		ret = _decrypt_data((unsigned char *)account->access_token, strlen(account->access_token), &decrypted_token);
 		free(account->access_token);
 		account->access_token = NULL;
-		if( ret == _ACCOUNT_ERROR_NONE)
+		if (ret == _ACCOUNT_ERROR_NONE)
 			account->access_token = decrypted_token;
 		else {
-			//To Do : fail
+			/* To Do : fail */
 			_ERR("decrypt_access_token fail");
 			return ret;
 		}

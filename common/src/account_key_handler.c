@@ -38,24 +38,23 @@
 
 #define RANDOM_FILE    "/dev/urandom"
 
-static int _get_random(int length, unsigned char** random)
+static int _get_random(int length, unsigned char **random)
 {
 	FILE *f;
-	//read random file
-	if((f = fopen(RANDOM_FILE, "r")) != NULL){
-		if(fread(*random, 1, length, f) != length) {
+	/* read random file */
+	if ((f = fopen(RANDOM_FILE, "r")) != NULL) {
+		if (fread(*random, 1, length, f) != length)
 			return CKMC_ERROR_UNKNOWN;
-		}
 	}
 	return CKMC_ERROR_NONE;
 }
 
-static int _get_app_mkey(unsigned char** mkey, int* mkey_len)
+static int _get_app_mkey(unsigned char **mkey, int *mkey_len)
 {
 	int ret = CKMC_ERROR_NONE;
 
-	const char* password = "password";
-	ckmc_raw_buffer_s *mkey_buffer=NULL;
+	const char *password = "password";
+	ckmc_raw_buffer_s *mkey_buffer = NULL;
 	const char *alias = ACCOUNT_MANAGER_MKEY_ALIAS;
 
 	_INFO("start _get_app_mkey");
@@ -73,7 +72,7 @@ static int _get_app_mkey(unsigned char** mkey, int* mkey_len)
 
 	_INFO("before mkey_buffer->size=[%d]", mkey_buffer->size);
 	*mkey_len = mkey_buffer->size;
-	*mkey = (unsigned char *) malloc((*mkey_len)+1);
+	*mkey = (unsigned char *)malloc((*mkey_len)+1);
 	if (*mkey == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
 		return CKMC_ERROR_OUT_OF_MEMORY;
@@ -81,9 +80,8 @@ static int _get_app_mkey(unsigned char** mkey, int* mkey_len)
 
 	memset(*mkey, 0, (*mkey_len)+1);
 	memcpy(*mkey, mkey_buffer->data, *mkey_len);
-//	(*mkey)[*mkey_len] = '\0';
 	_INFO("before mkey_buffer free");
-	if(mkey_buffer)
+	if (mkey_buffer)
 		ckmc_buffer_free(mkey_buffer);
 	_INFO("after mkey_buffer free");
 
@@ -98,11 +96,10 @@ static int _create_app_mkey(unsigned char **mkey, int *mkey_len)
 	const char *alias = ACCOUNT_MANAGER_MKEY_ALIAS;
 	ckmc_raw_buffer_s data;
 	ckmc_policy_s policy;
-//	unsigned char *text = (unsigned char*)"mkey_test";
 
 	_INFO("start _create_app_mkey");
 
-	random = (unsigned char *) malloc(MKEY_LEN);
+	random = (unsigned char *)malloc(MKEY_LEN);
 	if (random == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
 		return CKMC_ERROR_OUT_OF_MEMORY;
@@ -110,9 +107,8 @@ static int _create_app_mkey(unsigned char **mkey, int *mkey_len)
 
 	_INFO("before _get_random");
 	ret = _get_random(MKEY_LEN, &random);
-	if(CKMC_ERROR_NONE != ret) {
+	if (CKMC_ERROR_NONE != ret)
 		return CKMC_ERROR_UNKNOWN;
-	}
 
 	policy.password = "password";
 	policy.extractable = true;
@@ -122,8 +118,8 @@ static int _create_app_mkey(unsigned char **mkey, int *mkey_len)
 
 	_INFO("before ckmc_save_data");
 	ret = ckmc_save_data(alias, data, policy);
-	if(CKMC_ERROR_NONE != ret) {
-		if(random)
+	if (CKMC_ERROR_NONE != ret) {
+		if (random)
 			free(random);
 		return ret;
 	}
@@ -140,11 +136,10 @@ static int _get_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, int
 	int ret = CKMC_ERROR_NONE;
 	_INFO("start _get_app_dek");
 
-	const char* password = mkey;
-	ckmc_raw_buffer_s *dek_buffer=NULL;
+	const char *password = mkey;
+	ckmc_raw_buffer_s *dek_buffer = NULL;
 	char alias[128] = {0,};
 
-	//    sprintf(alias, "%s %s%s", pkg_id, APP_DEK_ALIAS_PFX, pkg_id);
 	sprintf(alias, "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
 
 	ret = ckmc_get_data(alias, password, &dek_buffer);
@@ -157,7 +152,7 @@ static int _get_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, int
 	}
 
 	*dek_len = dek_buffer->size;
-	*dek = (unsigned char *) malloc((*dek_len)+1);
+	*dek = (unsigned char *)malloc((*dek_len)+1);
 	if (*dek == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
 		return CKMC_ERROR_OUT_OF_MEMORY;
@@ -179,22 +174,20 @@ static int _create_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, 
 	ckmc_raw_buffer_s data;
 	ckmc_policy_s policy;
 	char alias[128] = {0,};
-//	unsigned char *text = (unsigned char*)"dek_test";
 
 	_INFO("start _create_app_dek");
 
 	sprintf(alias, "%s%s", ACCOUNT_MANAGER_DEK_ALIAS_PFX, pkg_id);
 
-	random = (unsigned char *) malloc(DEK_LEN);
+	random = (unsigned char *)malloc(DEK_LEN);
 	if (random == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
 		return CKMC_ERROR_OUT_OF_MEMORY;
 	}
 
 	ret = _get_random(DEK_LEN, &random);
-	if(CKMC_ERROR_NONE != ret) {
+	if (CKMC_ERROR_NONE != ret)
 		return CKMC_ERROR_UNKNOWN;
-	}
 
 	policy.password = mkey;
 	policy.extractable = true;
@@ -203,20 +196,14 @@ static int _create_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, 
 	data.size = DEK_LEN;
 
 	_INFO("before ckmc_save_data");
-	// save app_dek in key_manager
+	/* save app_dek in key_manager */
 	ret = ckmc_save_data(alias, data, policy);
-	if(CKMC_ERROR_NONE != ret) {
-		if(random)
+	if (CKMC_ERROR_NONE != ret) {
+		if (random)
 			free(random);
 		return ret;
 	}
-/*
-	// share app_dek for web app laucher to use app_dek
-	ret = ckmc_set_permission(alias, pkg_id, CKMC_PERMISSION_READ);
-	if(CKMC_ERROR_NONE != ret) {
-		return ret;
-	}
-*/
+
 	*dek = random;
 	*dek_len = DEK_LEN;
 
@@ -237,24 +224,24 @@ int account_key_handler_get_account_dek(const char *alias, unsigned char **accou
 	_INFO("before _get_app_mkey");
 	ret = _get_app_mkey(&account_mkey, &mkey_len);
 	_INFO("after _get_app_mkey ret=[%d]", ret);
-	if (ret != CKMC_ERROR_NONE) {	// To Do : error value
+	if (ret != CKMC_ERROR_NONE) {
 		_INFO("before _create_app_mkey");
 		ret = _create_app_mkey(&account_mkey, &mkey_len);
-		if (ret != CKMC_ERROR_NONE) {	// To Do : error value
+		if (ret != CKMC_ERROR_NONE) {
 			_ERR("_create_app_mkey failed ret=[%d]", ret);
-			return ret;	// To Do : error value
+			return ret;
 		}
 	}
 
 	_INFO("before _get_app_mkey");
 	ret = _get_app_dek((char *)account_mkey, alias, account_dek, dek_len);
 	_INFO("after _get_app_mkey, ret=[%d]", ret);
-	if (ret != CKMC_ERROR_NONE) { // To Do : error value
+	if (ret != CKMC_ERROR_NONE) {
 		ret = _create_app_dek((char *)account_mkey, alias, account_dek, dek_len);
 		_ACCOUNT_FREE(account_mkey);
-		if (ret != CKMC_ERROR_NONE) { // To Do : error value
+		if (ret != CKMC_ERROR_NONE) {
 			_ERR("_create_app_dek failed ret=[%d]", ret);
-			return ret; // To Do : error value
+			return ret;
 		}
 	}
 
