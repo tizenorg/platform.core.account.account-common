@@ -56,7 +56,6 @@ chsmack -a '_' %{_libdir}/libaccount-common.so.0*
 export CFLAGS="${CFLAGS} -fPIC"
 cmake . -DCMAKE_INSTALL_PREFIX=/usr \
 		-DLIBDIR=%{_libdir} \
-		-DBINDIR=%{_bindir} \
 		-DINCLUDEDIR=%{_includedir}
 
 make %{?jobs:-j%jobs}
