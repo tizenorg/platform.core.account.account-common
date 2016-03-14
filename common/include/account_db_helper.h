@@ -102,23 +102,23 @@
 
 #define ACCOUNT_GET_USER_DB_DIR(dest, size, uid) \
 	    do { \
-			snprintf(dest, size-1, "%s%d", "/usr/dbspace/", uid); \
+			snprintf(dest, size-1, "%s%d", tzplatform_mkpath(TZ_SYS_DB, "/"), uid); \
 		} while (0)
 #define ACCOUNT_GET_GLOBAL_DB_PATH(dest, size) \
 	    do { \
-			snprintf(dest, size-1, "%s", "/usr/dbspace/.account.db"); \
+			snprintf(dest, size-1, "%s", tzplatform_mkpath(TZ_SYS_DB, "/.account.db")); \
 		} while (0)
 #define ACCOUNT_GET_GLOBAL_JN_PATH(dest, size) \
 	    do { \
-			snprintf(dest, size-1, "%s", "/usr/dbspace/.account.db-journal"); \
+			snprintf(dest, size-1, "%s", tzplatform_mkpath(TZ_SYS_DB, "/.account.db-journal")); \
 		} while (0)
 #define ACCOUNT_GET_USER_DB_PATH(dest, size, uid) \
 	    do { \
-			snprintf(dest, size-1, "%s%d%s", "/usr/dbspace/", uid, "/.account.db"); \
+			snprintf(dest, size-1, "%s%d%s", tzplatform_mkpath(TZ_SYS_DB, "/"), uid, "/.account.db"); \
 		} while (0)
 #define ACCOUNT_GET_USER_JN_PATH(dest, size, uid) \
 	    do { \
-			snprintf(dest, size-1, "%s%d%s", "/usr/dbspace/", uid, "/.account.db-journal"); \
+			snprintf(dest, size-1, "%s%d%s", tzplatform_mkpath(TZ_SYS_DB, "/"), uid, "/.account.db-journal"); \
 		} while (0)
 #define ACCOUNT_TABLE "account"
 #define CAPABILITY_TABLE "capability"
