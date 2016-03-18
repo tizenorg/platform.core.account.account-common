@@ -21,6 +21,11 @@ BuildRequires:  pkgconfig(key-manager)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  python-xml
 
+
+%if "%{?profile}" == "tv"
+ExcludeArch: %{arm} %ix86 x86_64
+%endif
+
 %description
 Account common libraryXB-Public-Package: no
 
