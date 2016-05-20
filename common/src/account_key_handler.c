@@ -163,12 +163,13 @@ static int _get_app_dek(char *mkey, const char *pkg_id, unsigned char **dek, int
 	*dek = (unsigned char *)malloc((*dek_len)+1);
 	if (*dek == NULL) {
 		ACCOUNT_FATAL("Memory Allocation Failed");
+		_ACCOUNT_FREE(dek_buffer->data);
+		ckmc_buffer_free(dek_buffer);
 		return CKMC_ERROR_OUT_OF_MEMORY;
 	}
 
-	_INFO("before memcpy dek_buffer");
 	memcpy(*dek, dek_buffer->data, (*dek_len)+1);
-	_INFO("before dek_buffer free");
+	_ACCOUNT_FREE(dek_buffer->data);
 	ckmc_buffer_free(dek_buffer);
 
 	_INFO("end _get_app_dek");
@@ -240,8 +241,7 @@ int account_key_handler_get_account_dek(const char *alias, unsigned char **accou
 		ret = _create_app_mkey(&account_mkey, &mkey_len);
 		if (ret != CKMC_ERROR_NONE) {
 			_ERR("_create_app_mkey failed ret=[%d]", ret);
-			if (account_mkey)
-				free(account_mkey);
+			_ACCOUNT_FREE(account_mkey);
 			return ret;
 		}
 	}
@@ -251,12 +251,13 @@ int account_key_handler_get_account_dek(const char *alias, unsigned char **accou
 	_INFO("after _get_app_mkey, ret=[%d]", ret);
 	if (ret != CKMC_ERROR_NONE) {
 		ret = _create_app_dek((char *)account_mkey, alias, account_dek, dek_len);
-		_ACCOUNT_FREE(account_mkey);
 		if (ret != CKMC_ERROR_NONE) {
 			_ERR("_create_app_dek failed ret=[%d]", ret);
+			_ACCOUNT_FREE(account_mkey);
 			return ret;
 		}
 	}
+	_ACCOUNT_FREE(account_mkey);
 
 	_INFO("end account_key_hander_get_account_dek");
 

@@ -129,6 +129,8 @@ error:
 		EVP_CIPHER_CTX_free(ctx);
 	if (ret != CRYPTO_ERROR_NONE && ciphertext != NULL)
 		free(ciphertext);
+
+	EVP_cleanup();
 	return ret;
 }
 
@@ -210,6 +212,8 @@ error:
 		EVP_CIPHER_CTX_free(ctx);
 	if (ret != CRYPTO_ERROR_NONE && plaintext != NULL)
 		free(plaintext);
+
+	EVP_cleanup();
 	return ret;
 }
 
@@ -233,9 +237,12 @@ static int _encrypt_data(unsigned char *data, const int data_len, char **pp_encr
 	_INFO("before _encrypt_aes_cbc");
 
 	ret = _encrypt_aes_cbc(key, key_len, data, data_len, pp_encrypted_data, &enc_data_len);
+	_ACCOUNT_FREE(key);
+
 	if (ret != _ACCOUNT_ERROR_NONE) {
 		/* To Do : fail */
 		_ERR("_encrypt_aes_cbc failed");
+		_ACCOUNT_FREE(*pp_encrypted_data);
 	}
 
 	_INFO("after _encrypt_aes_cbc");
@@ -266,6 +273,7 @@ static int _decrypt_data(unsigned char *data, const int data_len, char **pp_decr
 		_ERR("_decrypt_aes_cbc failed");
 	}
 	_INFO("after _decrypt_aes_cbc, dec_data = %s", *pp_decrypted_data);
+	_ACCOUNT_FREE(key);
 
 	return _ACCOUNT_ERROR_NONE;
 }
