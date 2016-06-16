@@ -173,13 +173,13 @@ int _remove_sensitive_info_from_non_owning_account(account_s *account, int calle
 			free(account->access_token);
 			account->access_token = NULL;
 
-		} else {
+		}/* else {
 			int ret = decrypt_access_token(account);
 			if (ret != _ACCOUNT_ERROR_NONE) {
 				_ERR("decrypt_access_token error");
 				return ret;
 			}
-		}
+		}*/
 		_ACCOUNT_FREE(caller_package_name);
 		return _ACCOUNT_ERROR_NONE;
 	}
